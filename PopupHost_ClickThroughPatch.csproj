@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <Nullable>disable</Nullable>
+        <UseWindowsForms>true</UseWindowsForms>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <Prefer32bit>true</Prefer32bit>
+      <DebugSymbols>true</DebugSymbols>
+      <DebugType>embedded</DebugType>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+      <PackageReference Include="PInvoke.Kernel32" Version="0.7.124" />
+      <PackageReference Include="PInvoke.User32" Version="0.7.124" />
+      <PackageReference Include="PInvoke.Windows.Core" Version="0.7.124" />
+      <PackageReference Include="PInvoke.Windows.ShellScalingApi" Version="0.7.124" />
+    </ItemGroup>
+
+</Project>
