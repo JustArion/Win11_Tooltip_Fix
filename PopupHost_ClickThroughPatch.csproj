@@ -16,7 +16,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
       <PackageReference Include="PInvoke.Kernel32" Version="0.7.124" />
       <PackageReference Include="PInvoke.User32" Version="0.7.124" />
       <PackageReference Include="PInvoke.Windows.Core" Version="0.7.124" />
