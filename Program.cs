@@ -3,7 +3,6 @@ namespace PopupHost_ClickThroughPatch;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Microsoft.VisualBasic.Logging;
 using Newtonsoft.Json;
 using PInvoke;
 
@@ -16,8 +15,6 @@ static class Program
     static void Main()
     {
         InitializeConsole();
-
-        // Task.Run(InitializePollingLoop);
         InitializeWinEventHook();
         
         Application.Run(); // The process needs a message loop.
@@ -29,12 +26,7 @@ static class Program
 
         AppDomain.CurrentDomain.UnhandledException += (_, eo) => Trace.TraceError((eo.ExceptionObject as Exception)?.ToString());
         
-
-        Trace.Listeners.Add(new FileLogTraceListener 
-        { 
-            Name = "PopupHost.log", 
-            Location = LogFileLocation.ExecutableDirectory // For some reason this is now not the default?
-        });
+        Trace.Listeners.Add(new TextWriterTraceListener("PopupHost.log"));
         Trace.AutoFlush = true;
 
         if (!attached) return;
@@ -47,29 +39,34 @@ static class Program
         Trace.WriteLine("Attached Console Session");
     }
 
+    #if DEBUG
+    private const int _DebugProcessID = 9900;
+    #endif
     private static void InitializeWinEventHook()
     {
-        var hHandle = User32.SetWinEventHook(User32.WindowsEventHookType.EVENT_OBJECT_SHOW,
-            User32.WindowsEventHookType.EVENT_OBJECT_SHOW, 
-            IntPtr.Zero, 
-            WinHookCallback, 0, 0,
-            User32.WindowsEventHookFlags.WINEVENT_OUTOFCONTEXT);
+        #if DEBUG
+        var hHandle = InitializeOnPID(_DebugProcessID);
+        #else
+        var hHandle = InitializeOnPID(0);
+        #endif
 
         if (hHandle.DangerousGetHandle() != IntPtr.Zero) return;
         MessageBox.Show($"Program Failed with error code '{Marshal.GetLastWin32Error()}'", Application.ProductName);
         Application.Exit();
     }
 
-    #if DEBUG
-    private const int _DebugProcessID = 9900;
-    #endif
+    private static User32.SafeEventHookHandle InitializeOnPID(int pid) =>
+        User32.SetWinEventHook(User32.WindowsEventHookType.EVENT_OBJECT_SHOW,
+            User32.WindowsEventHookType.EVENT_OBJECT_SHOW, 
+            IntPtr.Zero, 
+            WinHookCallback, pid, 0,
+            User32.WindowsEventHookFlags.WINEVENT_OUTOFCONTEXT);
+    
     private static void WinHookCallback(IntPtr hookHandle, User32.WindowsEventHookType @event, IntPtr hwnd, int idobject, int idchild, int dweventthread, uint dwmseventtime)
     {
         try
         {
             if (User32.GetClassName(hwnd) != "Xaml_WindowedPopupClass") return;
-
-            // if (ProcessIDFromWindowHandle(hwnd) != 9900) return;
 
             var owner = User32.GetWindow(hwnd, User32.GetWindowCommands.GW_OWNER);
             var ownerClassName = User32.GetClassName(owner);
@@ -119,6 +116,7 @@ static class Program
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static void SetTransparentFlags(ref User32.SetWindowLongFlags style) => style |= User32.SetWindowLongFlags.WS_EX_TRANSPARENT | User32.SetWindowLongFlags.WS_EX_LAYERED;
     
+    #if DEBUG
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static string ProcessNameFromWindowHandle(IntPtr hwnd, bool pidOnFail = true)
     {
@@ -134,5 +132,6 @@ static class Program
             throw;
         }
     }
+    #endif
 
 }
