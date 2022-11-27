@@ -50,7 +50,7 @@ static class Program
         var hHandle = InitializeOnPID(0);
         #endif
 
-        if (hHandle.DangerousGetHandle() != IntPtr.Zero) return;
+        if (!hHandle.IsInvalid) return;
         MessageBox.Show($"Program Failed with error code '{Marshal.GetLastWin32Error()}'", Application.ProductName);
         Application.Exit();
     }
