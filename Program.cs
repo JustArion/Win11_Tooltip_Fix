@@ -36,7 +36,7 @@ static class Program
         Console.SetOut(stdOut);
         Trace.Listeners.Add(new ConsoleTraceListener());
 
-        Trace.WriteLine("Attached Console Session");
+        Trace.WriteLine("Attached Console Output to Session");
     }
 
     #if DEBUG
