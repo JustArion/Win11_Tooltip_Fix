@@ -1,6 +1,6 @@
 ### Steps
 * Build (Dotnet 6 Required)
-* Run As Administrator
+* (Optional) Run As Administrator (For editing other programs that run in higher elevations, eg. Task Manager)
 * Enjoy.
 
 Alternatively you can add a Task Scheduler script to have it auto start or throw it in your `shell:Startup` folder and get a UAC prompt each startup ;)
@@ -10,6 +10,17 @@ This was a quick fix to an annoying problem, I doubt many other people have this
 The popup blocks the mouse from clicking things behind the popup which causes issue during window dragging since Windows File Explorer has the same issue, Hovering Tabs shows their names, "Sort" and "View" and "..." displays their respective popups which block the ability to click and drag the explorer window. This fix addresses the issue.
 
 The fix does not address popups that are larger than 1 line as that may cause unintended issues with other parts of windows.
+
+### Packages
+<p align="center">
+The following packages are used in this project:
+</p>
+
+```xml
+<PackageReference Include="Interop.UIAutomationClient" Version="10.19041.0" />
+<PackageReference Include="PInvoke.Kernel32" Version="0.7.124" />
+<PackageReference Include="PInvoke.User32" Version="0.7.124" />
+```
 
 Pictures of an info popup:
 
