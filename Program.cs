@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using Interop.UIAutomationClient;
 using PInvoke;
 
-static class Program
+internal static class Program
 {
     /// <summary>
     ///  The main entry point for the application.
@@ -44,13 +44,21 @@ static class Program
     #endif
     private static void InitializeWinEventHook()
     {
+        
+        Callback = WinHookCallback;
+        
+        /// If we pass 'WinHookCallback' as an implicit cast to a delegate, the GC may in some cases may collect it.
+        /// So we need to keep a reference to it.
+        GC.KeepAlive(Callback);
+
         #if DEBUG
         var hHandle = InitializeOnPID(_DebugProcessID);
         #else
         var hHandle = InitializeOnPID(0);
         #endif
 
-        if (!hHandle.IsInvalid) return;
+        if (!hHandle.IsInvalid)
+            return;
         MessageBox.Show($"Program Failed with error code '{Marshal.GetLastWin32Error()}'", Application.ProductName);
         Application.Exit();
     }
@@ -59,49 +67,27 @@ static class Program
         User32.SetWinEventHook(User32.WindowsEventHookType.EVENT_OBJECT_SHOW,
             User32.WindowsEventHookType.EVENT_OBJECT_SHOW, 
             IntPtr.Zero, 
-            WinHookCallback, pid, 0,
+            Callback, pid, 0,
             User32.WindowsEventHookFlags.WINEVENT_OUTOFCONTEXT);
-    
+
+
+    private static User32.WinEventProc Callback;
     private static void WinHookCallback(IntPtr hookHandle, User32.WindowsEventHookType @event, IntPtr hwnd, int idobject, int idchild, int dweventthread, uint dwmseventtime)
     {
         try
         {
-            if (User32.GetClassName(hwnd) != "Xaml_WindowedPopupClass") return;
-
-            var owner = User32.GetWindow(hwnd, User32.GetWindowCommands.GW_OWNER);
-            var ownerClassName = User32.GetClassName(owner);
-            
-            /// This is the 'Windows Explorer' right click context menu.
-            /// It is treated as a Xaml Popup.
-            if (ownerClassName is "CabinetWClass" && !IsValidExplorerWindow(hwnd))
+            if (User32.GetClassName(hwnd) is not "Xaml_WindowedPopupClass") 
                 return;
+            
+            if (!IsTooltip(hwnd))
+                return;
+            
 
             SetTransparent(hwnd);
         }
         // If the Handle is disposed while we work with it, we don't care.
-        catch (Exception e) when (e is Win32Exception) { }
-    }
-    
-    private static readonly CUIAutomationClass _Automation = new();
-    private static bool IsValidExplorerWindow(IntPtr hwnd)
-    {
-        try
-        {
-            if (hwnd == IntPtr.Zero) return false;
-            var element = _Automation.ElementFromHandle(hwnd);
-            if (element == null) return false;
-
-            var popup = element.FindFirst(TreeScope.TreeScope_Children, _Automation.ControlViewCondition);
-
-            var child = popup.FindFirst(TreeScope.TreeScope_Children, _Automation.ControlViewCondition);
-
-            #if DEBUG
-            Console.WriteLine($"Type: '{child.CurrentClassName}' - '{child.CurrentName}'");
-            #endif
-            return child.CurrentClassName == "ToolTip";
-        }
-        // The user moved over a tooltip so fast that it was disposed before we could get to it.
-        catch (NullReferenceException) { return false; }
+        catch (Win32Exception) { }
+        catch (Exception e) { Trace.TraceError(e.ToString()); }
     }
     
     private static void SetTransparent(IntPtr windowHandle)
@@ -116,7 +102,54 @@ static class Program
 
         Trace.TraceError($"Error setting window style: {new Win32Exception(Marshal.GetLastWin32Error())}");
     }
+
+    private static readonly CUIAutomationClass _Automation = new();
     
+    /// <code>
+    /// This is the general structure we look for.
+    ///     - Xaml_WindowedPopupClass   (hwnd)
+    ///         - Popup
+    ///             - Tooltip
+    ///                 - TextBlock
+    /// </code>
+    private static bool IsTooltip(IntPtr hwnd)
+    {
+        try
+        {
+            if (hwnd == IntPtr.Zero) return false;
+            var element = _Automation.ElementFromHandle(hwnd);
+            if (element is not { CurrentFrameworkId: "XAML" }) return false;
+
+            var popup = element.FindFirst(TreeScope.TreeScope_Children, _Automation.ControlViewCondition);
+
+            var child = popup?.FindFirst(TreeScope.TreeScope_Children, _Automation.ControlViewCondition);
+            if (child is null)
+                return false;
+
+            #if DEBUG
+            Console.WriteLine($"Type: '{child.CurrentClassName}' - '{child.CurrentName}'");
+            #endif
+            return child.CurrentClassName == "ToolTip";
+        }
+        // The user moved over a tooltip so fast that it was disposed before we could access all its information.
+        catch (NullReferenceException) {}
+        catch (COMException e)
+        {
+            // An event was unable to invoke any of the subscribers (0x80040201)
+            // UIA_E_ELEMENTNOTAVAILABLE
+            // The element is ( not / no longer ) available on the UI Automation tree.
+            // The error wouldn't count as a NullRef as the error occurs when we call '_Automation.ElementFromhandle(hwnd);' The method will throw a COM Exception
+            // since from the time we got the handle to the time we called the method, the handle was disposed.
+            if (e.ErrorCode is not -0x7FFBFDFF)
+                HandleError(e);
+        }
+        catch (Exception e) { HandleError(e); }
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void HandleError(Exception e) => Trace.TraceError(e?.ToString());
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool HasTransparentFlags(User32.SetWindowLongFlags style) => style.HasFlag(User32.SetWindowLongFlags.WS_EX_TRANSPARENT) && style.HasFlag(User32.SetWindowLongFlags.WS_EX_LAYERED);
     
