@@ -14,6 +14,13 @@ internal static class Program
     [STAThread]
     static void Main()
     {
+        
+        var isWin11 = Environment.OSVersion.Version is { Major: >= 10, Minor: >= 0, Build: >= 22000 };
+        if (!isWin11)
+        {
+            MessageBox.Show($"The program is designed to run on Windows 11 or later.", Application.ProductName);
+            return;
+        }
         InitializeConsole();
         InitializeWinEventHook();
         
