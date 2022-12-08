@@ -88,26 +88,16 @@ internal static class Program
             
             if (!IsTooltip(hwnd))
                 return;
-            
 
-            SetTransparent(hwnd);
+            var windowInfo = GetWindowFlags(hwnd);
+            if (IsTransparent(windowInfo))
+                return;
+            
+            SetTransparent(hwnd, windowInfo);
         }
         // If the Handle is disposed while we work with it, we don't care.
         catch (Win32Exception) { }
         catch (Exception e) { Trace.TraceError(e.ToString()); }
-    }
-    
-    private static void SetTransparent(IntPtr windowHandle)
-    {
-        var style = (User32.SetWindowLongFlags) User32.GetWindowLong(windowHandle, User32.WindowLongIndexFlags.GWL_EXSTYLE);
-        if (HasTransparentFlags(style)) return;
-
-        SetTransparentFlags(ref style);
-        var retVal = User32.SetWindowLong(windowHandle, User32.WindowLongIndexFlags.GWL_EXSTYLE, style);
-        
-        if (retVal != 0) return;
-
-        Trace.TraceError($"Error setting window style: {new Win32Exception(Marshal.GetLastWin32Error())}");
     }
 
     private static readonly CUIAutomationClass _Automation = new();
@@ -158,8 +148,22 @@ internal static class Program
     private static void HandleError(Exception e) => Trace.TraceError(e?.ToString());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool HasTransparentFlags(User32.SetWindowLongFlags style) => style.HasFlag(User32.SetWindowLongFlags.WS_EX_TRANSPARENT) && style.HasFlag(User32.SetWindowLongFlags.WS_EX_LAYERED);
-    
+    private static bool IsTransparent(User32.SetWindowLongFlags style) => style.HasFlag(User32.SetWindowLongFlags.WS_EX_TRANSPARENT) && style.HasFlag(User32.SetWindowLongFlags.WS_EX_LAYERED);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    private static void SetTransparentFlags(ref User32.SetWindowLongFlags style) => style |= User32.SetWindowLongFlags.WS_EX_TRANSPARENT | User32.SetWindowLongFlags.WS_EX_LAYERED;
+    private static void SetTransparent(IntPtr hwnd, User32.SetWindowLongFlags style)
+    {
+
+        style |= User32.SetWindowLongFlags.WS_EX_TRANSPARENT | User32.SetWindowLongFlags.WS_EX_LAYERED;
+        
+        var retVal = User32.SetWindowLong(hwnd, User32.WindowLongIndexFlags.GWL_EXSTYLE, style);
+        
+        if (retVal != 0) 
+            return;
+
+        Trace.TraceError($"Error setting window style: {new Win32Exception(Marshal.GetLastWin32Error())}");
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    private static User32.SetWindowLongFlags GetWindowFlags(IntPtr hwnd) => (User32.SetWindowLongFlags)User32.GetWindowLong(hwnd, User32.WindowLongIndexFlags.GWL_EXSTYLE);
 }
