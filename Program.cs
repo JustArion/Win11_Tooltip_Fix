@@ -1,4 +1,4 @@
-namespace PopupHost_ClickThroughPatch;
+namespace Dawn.Patches.PopupHost_ClickThrough;
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -12,7 +12,7 @@ internal static class Program
     ///  The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main()
+    internal static void Main()
     {
         
         var isWin11 = Environment.OSVersion.Version is { Major: >= 10, Minor: >= 0, Build: >= 22000 };
