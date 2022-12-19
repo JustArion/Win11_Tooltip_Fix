@@ -52,7 +52,7 @@ if ($Settings['RunAsAdmin'])
     $IsElevated = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
     if ($IsElevated)
     {
-        Register-ScheduledTask -Action $StartAction -Trigger $Trigger -RunLevel Highest -TaskName 'ClickThroughPatch' -Description 'ClickThroughPatch Startup' -User 'SYSTEM' -Force
+        Register-ScheduledTask -Action $StartAction -Trigger $Trigger -RunLevel Highest -TaskName 'ClickThroughPatch' -Description 'ClickThroughPatch Startup' -Force
     }
     else
     {
@@ -60,7 +60,7 @@ if ($Settings['RunAsAdmin'])
 
         $commandBlock = {
             param($path)
-            Register-ScheduledTask -Action $(New-ScheduledTaskAction -Execute $Path) -Trigger $(New-ScheduledTaskTrigger -AtLogOn) -RunLevel Highest -TaskName 'ClickThroughPatch' -Description 'ClickThroughPatch Startup' -User 'SYSTEM' -Force
+            Register-ScheduledTask -Action $(New-ScheduledTaskAction -Execute $Path) -Trigger $(New-ScheduledTaskTrigger -AtLogOn) -RunLevel Highest -TaskName 'ClickThroughPatch' -Description 'ClickThroughPatch Startup' -Force
         }
         
         $startInfo = New-Object System.Diagnostics.ProcessStartInfo
@@ -94,7 +94,7 @@ else
 {
     $StartAction = New-ScheduledTaskAction -Execute $Settings['Path']
     $Trigger = New-ScheduledTaskTrigger -AtLogOn
-    Register-ScheduledTask -Action $StartAction -Trigger $Trigger -TaskName 'ClickThroughPatch' -Description 'ClickThroughPatch Startup' -User 'SYSTEM' -Force
+    Register-ScheduledTask -Action $StartAction -Trigger $Trigger -TaskName 'ClickThroughPatch' -Description 'ClickThroughPatch Startup' -Force
 }
 
 
