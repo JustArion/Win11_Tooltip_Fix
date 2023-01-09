@@ -1,5 +1,5 @@
 ### Steps
-* Build (Dotnet 6 Required)
+* Build ([DotNet 6 SDK Required](https://dotnet.microsoft.com/en-us/download/dotnet/6.0))
 * (Optional) Run As Administrator (For editing other programs that run in higher elevations, eg. Task Manager)
 * Enjoy.
 
