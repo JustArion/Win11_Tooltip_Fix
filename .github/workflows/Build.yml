@@ -33,12 +33,8 @@ jobs:
     - name: Build
       run: dotnet publish --no-restore --runtime win-x86 -p:PublishSingleFile=true --output ./Publish --no-self-contained --configuration Release;
 
-    - name: Archiving Artifacts
-      run: |
-        7z a -r Artifacts.zip ./Publish/*
-
     - name: Uploading Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
-        name: Build Artifacts
-        path: Artifacts.zip
+        name: Build Output
+        path: ./Output/*
