@@ -1,7 +1,10 @@
 ### Steps
-* Build ([DotNet 6 SDK Required](https://dotnet.microsoft.com/en-us/download/dotnet/6.0))
+* Build ([DotNet 6 SDK Required](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)) (Select the ".NET SDK 6.0.~" for x86)
 * (Optional) Run As Administrator (For editing other programs that run in higher elevations, eg. Task Manager)
 * Enjoy.
+
+### Requirements (To Run)
+* ([.NET 6.0.X Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)) (Select the ".NET Desktop Runtime 6.0.~" for x86)
 
 Alternatively you can add a Task Scheduler script to have it auto start or throw it in your `shell:Startup` folder and get a UAC prompt each startup ;)
 
