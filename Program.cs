@@ -53,7 +53,11 @@ internal static class Program
         Trace.Listeners.Add(new ConsoleTraceListener());
 
         if (!attached)
+        {
+            // On Some PCs a shadow console is created. We need to free it.
+            Kernel32.FreeConsole();
             return;
+        }
 
         Trace.WriteLine("Attached Console Output to Session");
     }
