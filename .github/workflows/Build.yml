@@ -4,8 +4,8 @@ on:
   push:
     branches: [ main ]
     paths:
-    - '**.cs'
-    - '**.csproj'
+    - '**/*.cs'
+    - '**/*.csproj'
   workflow_dispatch:
     inputs:
       reason:
