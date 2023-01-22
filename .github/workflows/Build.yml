@@ -1,0 +1,44 @@
+name: Build & Upload Artifacts
+
+on: 
+  push:
+    branches: [ main ]
+    paths:
+    - '**.cs'
+    - '**.csproj'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Manual Workflow Dispatch Reason'
+        required: true
+        default: 'Manual Run Test'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: .NET Core SDK Setup
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.X
+    
+    - name: Dependencies Setup
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet publish --no-restore --runtime win-x86 -p:PublishSingleFile=true --output ./Publish --no-self-contained --configuration Release;
+
+    - name: Archiving Artifacts
+      run: |
+        7z a -r Artifacts.zip ./Publish/*
+
+    - name: Uploading Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Build Artifacts
+        path: Artifacts.zip
