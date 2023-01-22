@@ -8,6 +8,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <RootNamespace>Dawn.Patches.PopupHost_ClickThrough</RootNamespace>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+        <PublicSign>true</PublicSign>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">

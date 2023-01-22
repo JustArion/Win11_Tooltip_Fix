@@ -49,12 +49,11 @@ internal static class Program
         Trace.Listeners.Add(new TextWriterTraceListener("PopupHost.log"));
         Trace.AutoFlush = true;
 
-        if (!attached) return;
-        
-        var stdOut = new StreamWriter(Console.OpenStandardOutput());
-        stdOut.AutoFlush = true;
-        Console.SetOut(stdOut);
+
         Trace.Listeners.Add(new ConsoleTraceListener());
+
+        if (!attached)
+            return;
 
         Trace.WriteLine("Attached Console Output to Session");
     }
