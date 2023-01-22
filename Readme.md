@@ -18,8 +18,8 @@ The following packages are used in this project:
 
 ```xml
 <PackageReference Include="Interop.UIAutomationClient" Version="10.19041.0" />
-<PackageReference Include="PInvoke.Kernel32" Version="0.7.124" />
-<PackageReference Include="PInvoke.User32" Version="0.7.124" />
+<PackageReference Include="Vanara.PInvoke.Kernel32" Version="0.7.124" />
+<PackageReference Include="Vanara.PInvoke.User32" Version="0.7.124" />
 ```
 
 Pictures of an info popup:
