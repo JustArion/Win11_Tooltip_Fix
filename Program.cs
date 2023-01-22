@@ -1,16 +1,19 @@
 namespace Dawn.Patches.PopupHost_ClickThrough;
 
+using System;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using Interop.UIAutomationClient;
-using PInvoke;
+using Vanara.PInvoke;
 
 internal static class Program
 {
-    /// <summary>
-    ///  The main entry point for the application.
-    /// </summary>
+    private const string ProductName = "PopupHost Clickthrough Patch";
+    
     [STAThread]
     internal static void Main()
     {
@@ -18,18 +21,28 @@ internal static class Program
         var isWin11 = Environment.OSVersion.Version is { Major: >= 10, Minor: >= 0, Build: >= 22000 };
         if (!isWin11)
         {
-            MessageBox.Show($"The program is designed to run on Windows 11 or later.", Application.ProductName);
+            User32.MessageBox(IntPtr.Zero, "The program is designed to run on Windows 11 or later.", ProductName, User32.MB_FLAGS.MB_OK);
             return;
         }
         InitializeConsole();
         InitializeWinEventHook();
         
-        Application.Run(); // The process needs a message loop.
+        // The process needs a message loop.
+        MessageLoop();
+    }
+    
+    private static void MessageLoop()
+    {
+        while (User32.GetMessage(out var msg) > 0)
+        {
+            User32.TranslateMessage(msg);
+            User32.DispatchMessage(msg);
+        }
     }
 
     private static void InitializeConsole()
     {
-        var attached = Kernel32.AttachConsole(-1);
+        var attached = Kernel32.AttachConsole(Kernel32.ATTACH_PARENT_PROCESS);
 
         AppDomain.CurrentDomain.UnhandledException += (_, eo) => Trace.TraceError((eo.ExceptionObject as Exception)?.ToString());
         
@@ -64,28 +77,41 @@ internal static class Program
         var hHandle = InitializeOnPID(0);
         #endif
 
-        if (!hHandle.IsInvalid)
+        if (!hHandle.IsNull)
             return;
-        MessageBox.Show($"Program Failed with error code '{Marshal.GetLastWin32Error()}'", Application.ProductName);
-        Application.Exit();
+        User32.MessageBox(IntPtr.Zero, $"Program Failed with error code '{Marshal.GetLastWin32Error()}'", ProductName, User32.MB_FLAGS.MB_OK);
+        Environment.Exit(1);
     }
-
-    private static User32.SafeEventHookHandle InitializeOnPID(int pid) =>
-        User32.SetWinEventHook(User32.WindowsEventHookType.EVENT_OBJECT_SHOW,
-            User32.WindowsEventHookType.EVENT_OBJECT_SHOW, 
+    
+    private static User32.HWINEVENTHOOK InitializeOnPID(uint pid) =>
+        User32.SetWinEventHook(User32.EventConstants.EVENT_OBJECT_SHOW,
+            User32.EventConstants.EVENT_OBJECT_SHOW, 
             IntPtr.Zero, 
             Callback, pid, 0,
-            User32.WindowsEventHookFlags.WINEVENT_OUTOFCONTEXT);
+            User32.WINEVENT.WINEVENT_OUTOFCONTEXT);
 
 
     private static User32.WinEventProc Callback;
-    private static void WinHookCallback(IntPtr hookHandle, User32.WindowsEventHookType @event, IntPtr hwnd, int idobject, int idchild, int dweventthread, uint dwmseventtime)
+    private const int _Xaml_WindowedPopupClass_StringLength = 23;
+    private static readonly StringBuilder _StringBuilder = new(_Xaml_WindowedPopupClass_StringLength + 1); // Xaml_WindowedPopupClass + \0
+    private static void WinHookCallback(User32.HWINEVENTHOOK hWinEventHook, uint winEvent, HWND hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
     {
         try
         {
-            if (User32.GetClassName(hwnd) is not "Xaml_WindowedPopupClass") 
-                return;
-            
+            try
+            {
+                var classNameLength = User32.GetClassName(hwnd, _StringBuilder, _StringBuilder.Capacity);
+                if (classNameLength != _Xaml_WindowedPopupClass_StringLength)
+                    return; // We save some time by comparing the length first. The majority of windows are not tooltips.
+                
+                if (_StringBuilder.ToString() is not "Xaml_WindowedPopupClass") 
+                    return;
+            }
+            finally
+            {
+                _StringBuilder.Clear();
+            }
+
             if (!IsTooltip(hwnd))
                 return;
 
@@ -109,12 +135,12 @@ internal static class Program
     ///             - Tooltip
     ///                 - TextBlock
     /// </code>
-    private static bool IsTooltip(IntPtr hwnd)
+    private static bool IsTooltip(HWND hwnd)
     {
         try
         {
-            if (hwnd == IntPtr.Zero) return false;
-            var element = _Automation.ElementFromHandle(hwnd);
+            if (hwnd.IsNull) return false;
+            var element = _Automation.ElementFromHandle(hwnd.DangerousGetHandle());
             if (element is not { CurrentFrameworkId: "XAML" }) return false;
 
             var popup = element.FindFirst(TreeScope.TreeScope_Children, _Automation.ControlViewCondition);
@@ -148,15 +174,15 @@ internal static class Program
     private static void HandleError(Exception e) => Trace.TraceError(e?.ToString());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool IsTransparent(User32.SetWindowLongFlags style) => style.HasFlag(User32.SetWindowLongFlags.WS_EX_TRANSPARENT) && style.HasFlag(User32.SetWindowLongFlags.WS_EX_LAYERED);
+    private static bool IsTransparent(User32.WindowStylesEx style) => style.HasFlag(User32.WindowStylesEx.WS_EX_TRANSPARENT) && style.HasFlag(User32.WindowStylesEx.WS_EX_LAYERED);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    private static void SetTransparent(IntPtr hwnd, User32.SetWindowLongFlags style)
+    private static void SetTransparent(HWND hwnd, User32.WindowStylesEx style)
     {
 
-        style |= User32.SetWindowLongFlags.WS_EX_TRANSPARENT | User32.SetWindowLongFlags.WS_EX_LAYERED;
+        style |= User32.WindowStylesEx.WS_EX_TRANSPARENT | User32.WindowStylesEx.WS_EX_LAYERED;
         
-        var retVal = User32.SetWindowLong(hwnd, User32.WindowLongIndexFlags.GWL_EXSTYLE, style);
+        var retVal = User32.SetWindowLong(hwnd, User32.WindowLongFlags.GWL_EXSTYLE, (int)style);
         
         if (retVal != 0) 
             return;
@@ -165,5 +191,5 @@ internal static class Program
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    private static User32.SetWindowLongFlags GetWindowFlags(IntPtr hwnd) => (User32.SetWindowLongFlags)User32.GetWindowLong(hwnd, User32.WindowLongIndexFlags.GWL_EXSTYLE);
+    private static User32.WindowStylesEx GetWindowFlags(HWND hwnd) => (User32.WindowStylesEx)User32.GetWindowLong(hwnd, User32.WindowLongFlags.GWL_EXSTYLE);
 }
