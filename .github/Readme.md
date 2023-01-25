@@ -1,7 +1,10 @@
-### Steps
+### Build Steps
 * Build ([DotNet 6 SDK Required](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)) (Select the ".NET SDK 6.0.~" for x86)
 * (Optional) Run As Administrator (For editing other programs that run in higher elevations, eg. Task Manager)
 * Enjoy.
+
+### Workflow Output:
+The following contains the latest build outputs from a ([Github Build Action](https://github.com/JustArion/Win11_PopupHost_Fix/actions/workflows/Build.yml))
 
 ### Requirements (To Run)
 * ([.NET 6.0.X Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)) (Select the ".NET Desktop Runtime 6.0.~" for x86)
