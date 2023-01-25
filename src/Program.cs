@@ -43,6 +43,7 @@ internal static class Program
     private static void InitializeConsole()
     {
         var attached = Kernel32.AttachConsole(Kernel32.ATTACH_PARENT_PROCESS);
+        
         AppDomain.CurrentDomain.UnhandledException += (_, eo) => Trace.TraceError((eo.ExceptionObject as Exception)?.ToString());
         
         Trace.Listeners.Add(new TextWriterTraceListener("PopupHost.log"));

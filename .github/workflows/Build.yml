@@ -28,10 +28,10 @@ jobs:
         dotnet-version: 6.0.X
     
     - name: Dependencies Setup
-      run: dotnet restore .\src\
+      run: dotnet restore ./src/
 
     - name: Build
-      run: dotnet publish .\src\ --no-restore --runtime win-x86 -p:PublishSingleFile=true --output .\src\Publish --no-self-contained --configuration Release;
+      run: dotnet publish ./src/ --no-restore --runtime win-x86 -p:PublishSingleFile=true --output ./src/Publish --no-self-contained --configuration Release;
 
     - name: Uploading Artifacts
       uses: actions/upload-artifact@v3
