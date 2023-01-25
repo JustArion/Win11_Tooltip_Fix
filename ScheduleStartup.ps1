@@ -22,12 +22,12 @@ function Query-Admin
     Write-Host
 
     Write-Host 'Would you like to Start the Patch as Administrator?'
-#    sleep 1
+    sleep 1
     Write-Host 'Starting the Patch as Administrator will allow it to change the Popups of all Apps. '
-#    sleep 2
-    Write-Host 'An example of this would be Task Manager. (Y/N): ' -NoNewLine
+    sleep 2
+    Write-Host 'An example of this would be Task Manager. (Y/n): ' -NoNewLine
     
-    return $($(Read-Host) -eq 'Y') # The 'Y' here can be lower-case or upper-case
+    return $($(Read-Host) -ne 'N') # The 'N' here can be lower-case or upper-case
 }
 
 function Get-Settings
