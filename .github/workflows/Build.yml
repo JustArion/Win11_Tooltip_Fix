@@ -2,10 +2,10 @@ name: Build & Upload Artifacts
 
 on: 
   push:
-    branches: [ main ]
+    branches: [ master, main ]
     paths:
-    - '*.cs'
-    - '*.csproj'
+    - '**/*.cs'
+    - '**/*.csproj'
   workflow_dispatch:
     inputs:
       reason:
@@ -31,10 +31,10 @@ jobs:
       run: dotnet restore
 
     - name: Build
-      run: dotnet publish --no-restore --runtime win-x86 -p:PublishSingleFile=true --output ./Publish --no-self-contained --configuration Release;
+      run: dotnet publish .\src\ --no-restore --runtime win-x86 -p:PublishSingleFile=true --output .\src\Publish --no-self-contained --configuration Release;
 
     - name: Uploading Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: Build Output
-        path: ./Publish/*
+        path: ./src/Publish/*
