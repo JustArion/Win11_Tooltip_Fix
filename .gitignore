@@ -1,7 +1,7 @@
-.idea/*
-bin/*
-obj/*
-Test/*
-Publish/*
-PopupHost_ClickThroughPatch.csproj.user
-PopupHost_ClickThroughPatch.sln.DotSettings.user
+src/.idea/*
+src/bin/*
+src/obj/*
+src/Test/*
+src/Publish/*
+src/PopupHost_ClickThroughPatch.csproj.user
+src/PopupHost_ClickThroughPatch.sln.DotSettings.user
