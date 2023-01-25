@@ -28,7 +28,7 @@ jobs:
         dotnet-version: 6.0.X
     
     - name: Dependencies Setup
-      run: dotnet restore
+      run: dotnet restore .\src\
 
     - name: Build
       run: dotnet publish .\src\ --no-restore --runtime win-x86 -p:PublishSingleFile=true --output .\src\Publish --no-self-contained --configuration Release;
