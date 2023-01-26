@@ -2,9 +2,9 @@
 The following contains the latest build outputs from a ([Github Build Action](https://github.com/JustArion/Win11_PopupHost_Fix/actions/workflows/Build.yml))
 
 ### Requirements (To Run & Build)
-* ([.NET 6.0.X Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)) (Select the ".NET Desktop Runtime 6.0.~" for x86)
-* ([.NET 6.0.X SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)) (Select the ".NET SDK 6.0.~" for x86)
-* (Optional* For Downloading the Repo) ([Git](https://git-scm.com/downloads))
+* [.NET 6.0.X Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) (Select the ".NET Desktop Runtime 6.0.~" for x86)
+* [.NET 6.0.X SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) (Select the ".NET SDK 6.0.~" for x86)
+* (Optional* For Downloading the Repo) [Git](https://git-scm.com/downloads)
 
 ### Build Steps (Simple)
 * git clone https://github.com/JustArion/Win11_PopupHost_Fix
