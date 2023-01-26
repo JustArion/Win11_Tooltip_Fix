@@ -16,8 +16,8 @@ The following contains the latest build outputs from a ([Github Build Action](ht
 ### Build Steps (Detailed)
 * git clone https://github.com/JustArion/Win11_PopupHost_Fix
 * cd .\Win11_PopupHost_Fix\
-* ([dotnet](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)) restore ./src/
-* ([dotnet](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)) publish ./src/ --no-restore --runtime win-x86 -p:PublishSingleFile=true --output ./src/Publish --no-self-contained --configuration Release;
+* [dotnet](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) restore ./src/
+* [dotnet](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) publish ./src/ --no-restore --runtime win-x86 -p:PublishSingleFile=true --output ./src/Publish --no-self-contained --configuration Release;
 * (Optional) Run As Administrator (For editing other programs that run in higher elevations, eg. Task Manager)
 * Enjoy.
 
