@@ -15,6 +15,7 @@ on:
 
 jobs:
   build:
+    name: Builds the project within the src folder
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -33,11 +34,9 @@ jobs:
     - name: Build
       run: dotnet publish ./src/ --no-restore --runtime win-x86 -p:PublishSingleFile=true --output ./src/Publish --no-self-contained --configuration Release;
 
-    - name: Uploading Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: Build Output
-        path: ./src/Publish/*
+    - name: Archive the Build
+      run: 7z a -tzip Release.zip ./src/Publish/*
+
     - name: Create Release
       uses: actions/create-release@v1
       with:
@@ -51,7 +50,7 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./src/Publish/*
+        asset_path: ./Release.zip
         asset_name: PopupHost_Fix.zip
         asset_content_type: application/zip
       env:
