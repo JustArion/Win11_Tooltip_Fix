@@ -1,21 +1,30 @@
-### Build Steps
-* Build ([DotNet 6 SDK Required](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)) (Select the ".NET SDK 6.0.~" for x86)
-* (Optional) Run As Administrator (For editing other programs that run in higher elevations, eg. Task Manager)
-* Enjoy.
-
 ### Workflow Output:
 The following contains the latest build outputs from a ([Github Build Action](https://github.com/JustArion/Win11_PopupHost_Fix/actions/workflows/Build.yml))
 
-### Requirements (To Run)
+### Requirements (To Run & Build)
 * ([.NET 6.0.X Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)) (Select the ".NET Desktop Runtime 6.0.~" for x86)
+* ([.NET 6.0.X SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)) (Select the ".NET SDK 6.0.~" for x86)
+* (Optional* For Downloading the Repo) ([Git](https://git-scm.com/downloads))
 
-Alternatively you can add a Task Scheduler script to have it auto start or throw it in your `shell:Startup` folder and get a UAC prompt each startup ;)
+### Build Steps (Simple)
+* git clone https://github.com/JustArion/Win11_PopupHost_Fix
+* cd .\Win11_PopupHost_Fix\
+* ./Build.ps1
+* (Optional) Run As Administrator (For editing other programs that run in higher elevations, eg. Task Manager)
+* Enjoy.
 
-This was a quick fix to an annoying problem, I doubt many other people have this issue, due to this reason, there is a lack of documentation to the project.
+### Build Steps (Detailed)
+* git clone https://github.com/JustArion/Win11_PopupHost_Fix
+* cd .\Win11_PopupHost_Fix\
+* ([dotnet](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)) restore ./src/
+* ([dotnet](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)) publish ./src/ --no-restore --runtime win-x86 -p:PublishSingleFile=true --output ./src/Publish --no-self-contained --configuration Release;
+* (Optional) Run As Administrator (For editing other programs that run in higher elevations, eg. Task Manager)
+* Enjoy.
+
+### Running on Startup
+You can add a Task Scheduler script to have it auto start or throw it in your `shell:Startup` folder and get a UAC prompt each startup ;)
 
 The popup blocks the mouse from clicking things behind the popup which causes issue during window dragging since Windows File Explorer has the same issue, Hovering Tabs shows their names, "Sort" and "View" and "..." displays their respective popups which block the ability to click and drag the explorer window. This fix addresses the issue.
-
-The fix does not address popups that are larger than 1 line as that may cause unintended issues with other parts of windows.
 
 ### Packages
 <p align="center">
