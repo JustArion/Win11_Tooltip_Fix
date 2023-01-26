@@ -1,6 +1,11 @@
 name: Build & Upload Artifacts
 
-on:
+on: 
+  push:
+    branches: [ master, main ]
+    paths:
+    - '**/*.cs'
+    - '**/*.csproj'
   workflow_dispatch:
     inputs:
       reason:
@@ -33,3 +38,21 @@ jobs:
       with:
         name: Build Output
         path: ./src/Publish/*
+    - name: Create Release
+      uses: actions/create-release@v1
+      with:
+        tag_name: v1.${{ github.run_number }}
+        release_name: Release v1.${{ github.run_number }}
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload Artifacts to Release
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./src/Publish/*
+        asset_name: PopupHost_Fix.zip
+        asset_content_type: application/zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
