@@ -15,7 +15,7 @@ on:
 
 jobs:
   build:
-    name: Builds the project within the src folder
+    name: Build Project
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -38,6 +38,7 @@ jobs:
       run: 7z a -tzip Release.zip ./src/Publish/*
 
     - name: Create Release
+      id: create_release
       uses: actions/create-release@v1
       with:
         tag_name: v1.${{ github.run_number }}
