@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tooltip_Fix", "Tooltip_Fix\Tooltip_Fix.csproj", "{2E749F59-70CD-4D2B-8A31-19996B0582BF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E749F59-70CD-4D2B-8A31-19996B0582BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E749F59-70CD-4D2B-8A31-19996B0582BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E749F59-70CD-4D2B-8A31-19996B0582BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E749F59-70CD-4D2B-8A31-19996B0582BF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

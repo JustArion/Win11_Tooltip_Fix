@@ -1,86 +1,70 @@
-namespace Dawn.Patches.PopupHost_ClickThrough;
+﻿#nullable enable
+namespace Dawn.Apps.Tooltip_Fix;
 
-using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using global::Serilog;
 using Interop.UIAutomationClient;
 using Vanara.PInvoke;
 
-internal static class Program
+internal class WorkerService : IDisposable
 {
-    private const string ProductName = "PopupHost Clickthrough Patch";
-    
-    [STAThread]
-    internal static void Main()
+    private const string ProductName = "Tooltip Fix";
+
+    private ApplicationContext? ctx;
+
+    internal WorkerService() => new Thread(ExecuteMessageLoop).Start();
+
+    /// <summary>
+    ///  A bit different than what we did before, but we needed to throw this onto a separate thread to avoid blocking the main thread, the thread starts and exits gracefully.
+    ///  Blocking the main thread would lead to Service Stop and Start events not being fired / delayed.
+    /// </summary>
+    private void ExecuteMessageLoop()
     {
         
-        var isWin11 = Environment.OSVersion.Version is { Major: >= 10, Minor: >= 0, Build: >= 22000 };
-        if (!isWin11)
-        {
-            User32.MessageBox(IntPtr.Zero, "The program is designed to run on Windows 11 or later.", ProductName, User32.MB_FLAGS.MB_OK);
-            return;
-        }
-        InitializeConsole();
+        Log.Logger.Verbose("Starting Message Loop");
+        
+        ctx = new();
+        ctx.ThreadExit += (_, _) => Log.Logger.Verbose("Stopping Message Loop");
         InitializeWinEventHook();
         
-        // The process needs a message loop.
-        MessageLoop();
+        Application.Run(ctx);
     }
     
-    private static void MessageLoop()
+    public void EnsureDisposed()
     {
-        while (User32.GetMessage(out var msg) > 0)
-        {
-            User32.TranslateMessage(msg);
-            User32.DispatchMessage(msg);
-        }
-    }
-
-    private static void InitializeConsole()
-    {
-        var attached = Kernel32.AttachConsole(Kernel32.ATTACH_PARENT_PROCESS);
-        
-        AppDomain.CurrentDomain.UnhandledException += (_, eo) => Trace.TraceError((eo.ExceptionObject as Exception)?.ToString());
-        
-        Trace.Listeners.Add(new TextWriterTraceListener("PopupHost.log"));
-        Trace.AutoFlush = true;
-
-
-        Trace.Listeners.Add(new ConsoleTraceListener());
-
-        if (!attached)
-        {
-            // On Some PCs a shadow console is created. We need to free it.
-            Kernel32.FreeConsole();
+        ctx?.ExitThread();
+        if (_hHook.IsNull)
             return;
-        }
-
-        Trace.WriteLine("Attached Console Output to Session");
+        
+        Log.Logger.Verbose("Disposing of the WinEventHook");
+        Dispose();
     }
+    public void Dispose() => User32.UnhookWinEvent(_hHook);
 
     #if DEBUG
     private const int _DebugProcessID = 0;
     #endif
-    private static void InitializeWinEventHook()
+    private User32.HWINEVENTHOOK _hHook;
+    private void InitializeWinEventHook()
     {
         
-        Callback = WinHookCallback;
+        Callback ??= WinHookCallback;
         
         /// If we pass 'WinHookCallback' as an implicit cast to a delegate, the GC may in some cases may collect it.
         /// So we need to keep a reference to it.
         GC.KeepAlive(Callback);
 
         #if DEBUG
-        var hHandle = InitializeOnPID(_DebugProcessID);
+        _hHook = InitializeOnPID(_DebugProcessID);
         #else
-        var hHandle = InitializeOnPID(0);
+        _hHook = InitializeOnPID(0);
         #endif
 
-        if (!hHandle.IsNull)
+        if (!_hHook.IsNull)
             return;
         User32.MessageBox(IntPtr.Zero, $"Program Failed with error code '{Marshal.GetLastWin32Error()}'", ProductName, User32.MB_FLAGS.MB_OK);
         Environment.Exit(1);
@@ -96,7 +80,7 @@ internal static class Program
 
     private static User32.WinEventProc Callback;
     private const int _Xaml_WindowedPopupClass_StringLength = 23;
-    private static readonly StringBuilder _StringBuilder = new(_Xaml_WindowedPopupClass_StringLength + 1); // Xaml_WindowedPopupClass + \0
+    private static readonly StringBuilder _StringBuilder = new(_Xaml_WindowedPopupClass_StringLength + 1); // Xaml_WindowedPopupClass + Null Terminator
     private static void WinHookCallback(User32.HWINEVENTHOOK hWinEventHook, uint winEvent, HWND hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
     {
         try
@@ -126,10 +110,10 @@ internal static class Program
         }
         // If the Handle is disposed while we work with it, we don't care.
         catch (Win32Exception) { }
-        catch (Exception e) { Trace.TraceError(e.ToString()); }
+        catch (Exception e) { Log.Logger.Error(e, "Unknown Error"); }
     }
-
-    private static readonly CUIAutomationClass _Automation = new();
+    
+        private static readonly CUIAutomationClass _Automation = new();
     
     /// <code>
     /// This is the general structure we look for.
@@ -144,16 +128,28 @@ internal static class Program
         {
             if (hwnd.IsNull) return false;
             var element = _Automation.ElementFromHandle(hwnd.DangerousGetHandle());
+            
             if (element is not { CurrentFrameworkId: "XAML" }) return false;
 
             var popup = element.FindFirst(TreeScope.TreeScope_Children, _Automation.ControlViewCondition);
+            if (popup is null)
+                return false;
 
+            #if DEBUG
+            //                                Xaml_WindowedPopupClass         PopupHost                   Popup                       Popup
+            Log.Logger.Debug("'{CurrentElementClassName}' - '{CurrentElementName}' - '{CurrentPopupClassName}' - '{CurrentPopupName}'", 
+                element.CurrentClassName, element.CurrentName, popup.CurrentClassName, popup.CurrentName);
+            #endif
+            
             var child = popup?.FindFirst(TreeScope.TreeScope_Children, _Automation.ControlViewCondition);
             if (child is null)
                 return false;
 
             #if DEBUG
-            Console.WriteLine($"Type: '{child.CurrentClassName}' - '{child.CurrentName}'");
+            //                                  ToolTip            {ToolTipName}
+            Log.Logger.Debug("Type: '{CurrentClassName}' - '{CurrentName}'", 
+                child.CurrentClassName, child.CurrentName);
+
             #endif
             return child.CurrentClassName == "ToolTip";
         }
@@ -174,7 +170,7 @@ internal static class Program
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void HandleError(Exception e) => Trace.TraceError(e?.ToString());
+    private static void HandleError(Exception e) => Log.Logger.Error(e, "Tooltip Error Handler");
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsTransparent(User32.WindowStylesEx style) => style.HasFlag(User32.WindowStylesEx.WS_EX_TRANSPARENT) && style.HasFlag(User32.WindowStylesEx.WS_EX_LAYERED);
@@ -190,7 +186,7 @@ internal static class Program
         if (retVal != 0) 
             return;
 
-        Trace.TraceError($"Error setting window style: {new Win32Exception(Marshal.GetLastWin32Error())}");
+        Log.Logger.Error(new Win32Exception(Marshal.GetLastWin32Error()), "Error setting window style");
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
