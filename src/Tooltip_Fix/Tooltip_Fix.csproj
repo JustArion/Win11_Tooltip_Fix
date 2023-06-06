@@ -8,6 +8,10 @@
         <LangVersion>latestmajor</LangVersion>
         <RootNamespace>Dawn.Apps.Tooltip_Fix</RootNamespace>
         <UseWindowsForms>true</UseWindowsForms>
+        <Company>JustArion</Company>
+        <Product>Tooltip Fix Service</Product>
+        <AssemblyVersion>1.4</AssemblyVersion>
+        <FileVersion>1.4</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

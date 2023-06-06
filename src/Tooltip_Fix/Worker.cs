@@ -1,7 +1,8 @@
 namespace Dawn.Apps.Tooltip_Fix;
 
+using System.Reflection;
 using global::Serilog;
-using global::Serilog.Core;
+using Dawn.Apps.Tooltip_Fix.Serilog.CustomEnrichers;
 
 public class Worker : BackgroundService
 {
@@ -12,6 +13,7 @@ public class Worker : BackgroundService
     public override Task StartAsync(CancellationToken cancellationToken)
     {
         Log.Logger.Information("{ServiceName} Started", ServiceName);
+        
 
         try
         {
