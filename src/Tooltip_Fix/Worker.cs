@@ -1,14 +1,12 @@
 namespace Dawn.Apps.Tooltip_Fix;
 
-using System.Reflection;
 using global::Serilog;
-using Dawn.Apps.Tooltip_Fix.Serilog.CustomEnrichers;
 
 public class Worker : BackgroundService
 {
     private const string ServiceName = "Tooltip Fix Service";
 
-    private WorkerService _CurrentService;
+    private MessageRunner _CurrentService;
     
     public override Task StartAsync(CancellationToken cancellationToken)
     {
@@ -18,7 +16,7 @@ public class Worker : BackgroundService
         try
         {
             _CurrentService?.EnsureDisposed();
-            _CurrentService = new WorkerService();
+            _CurrentService = new MessageRunner();
         }
         catch (Exception e)
         {
@@ -30,7 +28,11 @@ public class Worker : BackgroundService
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        => await Task.Yield();
+    {
+        var tcs = new TaskCompletionSource();
+        stoppingToken.Register(s => ((TaskCompletionSource)s).SetResult(), tcs);
+        await tcs.Task;
+    }
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {

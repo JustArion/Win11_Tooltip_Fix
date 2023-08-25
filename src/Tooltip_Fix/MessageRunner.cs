@@ -10,13 +10,13 @@ using global::Serilog;
 using Interop.UIAutomationClient;
 using Vanara.PInvoke;
 
-internal class WorkerService : IDisposable
+internal class MessageRunner : IDisposable
 {
     private const string ProductName = "Tooltip Fix";
 
     private ApplicationContext? ctx;
 
-    internal WorkerService() => new Thread(ExecuteMessageLoop).Start();
+    internal MessageRunner() => new Thread(ExecuteMessageLoop).Start();
 
     /// <summary>
     ///  A bit different than what we did before, but we needed to throw this onto a separate thread to avoid blocking the main thread, the thread starts and exits gracefully.
@@ -66,7 +66,7 @@ internal class WorkerService : IDisposable
 
         if (!_hHook.IsNull)
             return;
-        User32.MessageBox(IntPtr.Zero, $"Program Failed with error code '{Marshal.GetLastWin32Error()}'", ProductName, User32.MB_FLAGS.MB_OK);
+        User32.MessageBox(IntPtr.Zero, $"Program Failed with error code '{Marshal.GetLastWin32Error()}'", ProductName);
         Environment.Exit(1);
     }
     
@@ -78,7 +78,7 @@ internal class WorkerService : IDisposable
             User32.WINEVENT.WINEVENT_OUTOFCONTEXT);
 
 
-    private static User32.WinEventProc Callback;
+    private static User32.WinEventProc? Callback;
     private const int _Xaml_WindowedPopupClass_StringLength = 23;
     private static readonly StringBuilder _StringBuilder = new(_Xaml_WindowedPopupClass_StringLength + 1); // Xaml_WindowedPopupClass + Null Terminator
     private static void WinHookCallback(User32.HWINEVENTHOOK hWinEventHook, uint winEvent, HWND hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
@@ -141,7 +141,7 @@ internal class WorkerService : IDisposable
                 element.CurrentClassName, element.CurrentName, popup.CurrentClassName, popup.CurrentName);
             #endif
             
-            var child = popup?.FindFirst(TreeScope.TreeScope_Children, _Automation.ControlViewCondition);
+            var child = popup.FindFirst(TreeScope.TreeScope_Children, _Automation.ControlViewCondition);
             if (child is null)
                 return false;
 

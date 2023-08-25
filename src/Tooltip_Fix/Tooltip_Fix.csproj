@@ -4,14 +4,16 @@
         <TargetFramework>net7.0-windows</TargetFramework>
         <Nullable>disable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <RuntimeIdentifier>win-x86</RuntimeIdentifier>
         <LangVersion>latestmajor</LangVersion>
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
+        <RuntimeIdentifier>win-x86</RuntimeIdentifier>
         <RootNamespace>Dawn.Apps.Tooltip_Fix</RootNamespace>
         <UseWindowsForms>true</UseWindowsForms>
         <Company>JustArion</Company>
         <Product>Tooltip Fix Service</Product>
-        <AssemblyVersion>1.4</AssemblyVersion>
-        <FileVersion>1.4</FileVersion>
+        <AssemblyVersion>2.0</AssemblyVersion>
+        <FileVersion>2.0</FileVersion>
+        <ServerGarbageCollection>true</ServerGarbageCollection>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -24,11 +26,19 @@
 
     <ItemGroup>
         <PackageReference Include="Interop.UIAutomationClient.Signed" Version="10.19041.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.1" />
         <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
         <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
         <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.2" />
-        <PackageReference Include="Vanara.PInvoke.Kernel32" Version="3.4.15" />
+        <PackageReference Include="Vanara.PInvoke.Kernel32" Version="3.4.16" />
         <PackageReference Include="Vanara.PInvoke.User32" Version="3.4.15" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>

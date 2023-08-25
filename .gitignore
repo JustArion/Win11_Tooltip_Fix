@@ -4,6 +4,7 @@ src/obj/*
 src/.vs/*
 src/packages/*
 src/Test/*
+src/Output/*
 
 src/Publish/*
 .vs/*
@@ -12,10 +13,9 @@ src/Publish/*
 *.suo
 *.user
 
-# The following is specific to the ServiceInstaller project
-src/ServiceInstaller/AdditionalFiles/AspNetCoreRuntime.exe
-src/ServiceInstaller/bin/*
-src/ServiceInstaller/obj/*
+# The following is specific to the Start_Tooltip_Fix project
+src/Start_Tooltip_Fix/bin/*
+src/Start_Tooltip_Fix/obj/*
 
 # The following is specific to the Service project
 src/Tooltip_Fix/bin/*
