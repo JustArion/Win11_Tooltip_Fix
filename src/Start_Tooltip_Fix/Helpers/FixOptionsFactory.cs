@@ -13,7 +13,11 @@ public static class FixOptionsFactory
     {
         var serviceDirectoryPath = new DirectoryInfo(AppContext.BaseDirectory).EnumerateDirectories().FirstOrDefault(d => d.Name == "Service");
 
-        if (serviceDirectoryPath?.GetFiles().FirstOrDefault(x => GetFileDescription(x) == FILE_DESCRIPTION) is null)
+        if (serviceDirectoryPath?.GetFiles().FirstOrDefault(x =>
+            {
+                var fd = GetFileDescription(x);
+                return fd != null && fd.Contains(FILE_DESCRIPTION);
+            }) is null)
         {
             MessageBox.Show($"Service Folder or 'Service/{BINARY_NAME}' was not found. Make sure to extract all files from the .zip and try again", SERVICE_NAME, MessageBoxButtons.OK, MessageBoxIcon.Error);
             Environment.Exit(1);
