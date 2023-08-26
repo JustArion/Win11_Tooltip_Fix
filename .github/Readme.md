@@ -1,32 +1,22 @@
-### Workflow Output:
-The following contains the latest build outputs from a ([Github Build Action](https://github.com/JustArion/Win11_PopupHost_Fix/actions/workflows/Build.yml))
+### Prerequisites
+* [.NET 7.0.X Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) (Select the ".NET Desktop Runtime 7.0" for `x86`)
 
-### Requirements (To Run & Build)
-* [.NET 6.0.X Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) (Select the ".NET Desktop Runtime 6.0.~" for x86)
-* [.NET 6.0.X SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) (Select the ".NET SDK 6.0.~" for x64)
-* (Optional* For Downloading the Repo) [Git](https://git-scm.com/downloads)
+### Installing
+Given you've installed the `Prerequisites`
+To `Install` or `Uninstall` simply run `Start_Tooltip_Fix.exe` from the extracted .zip from the releases section.
 
-### Build Steps (Simple)
-`Make sure the proper .NET 6.0.X SDK is installed.`
-* git clone https://github.com/JustArion/Win11_PopupHost_Fix
-* cd .\Win11_PopupHost_Fix\
-* Set-ExecutionPolicy Bypass -Scope Process
-* ./Build.ps1
-* (Optional) Run As Administrator (For editing other programs that run in higher elevations, eg. Task Manager)
-* Enjoy.
+### Requirements (To Build from Source)
+* [.NET 7.0.X SDK - x86](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+* Optional* [Git](https://git-scm.com/downloads)
 
-### Build Steps (Detailed)
-* git clone https://github.com/JustArion/Win11_PopupHost_Fix
-* cd .\Win11_PopupHost_Fix\
-* [dotnet](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) restore ./src/
-* [dotnet](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) publish ./src/ --no-restore --runtime win-x86 -p:PublishSingleFile=true --output ./src/Publish --no-self-contained --configuration Release;
-* (Optional) Run As Administrator (For editing other programs that run in higher elevations, eg. Task Manager)
-* Enjoy.
-
-### Running on Startup
-You can add a Task Scheduler script to have it auto start or throw it in your `shell:Startup` folder and get a UAC prompt each startup ;)
-
-The popup blocks the mouse from clicking things behind the popup which causes issue during window dragging since Windows File Explorer has the same issue, Hovering Tabs shows their names, "Sort" and "View" and "..." displays their respective popups which block the ability to click and drag the explorer window. This fix addresses the issue.
+### Building from Source
+`Make sure the proper .NET 7.0.X SDK is installed.`
+```ps1
+git clone https://github.com/JustArion/Win11_Tooltip_Fix
+cd .\Win11_Tooltip_Fix\Extra\
+Set-ExecutionPolicy Bypass -Scope Process
+./Build.ps1
+```
 
 ### Packages
 <p align="center">
@@ -34,9 +24,13 @@ The following packages are used in this project:
 </p>
 
 ```xml
-<PackageReference Include="Interop.UIAutomationClient" Version="10.19041.0" />
-<PackageReference Include="Vanara.PInvoke.Kernel32" Version="0.7.124" />
-<PackageReference Include="Vanara.PInvoke.User32" Version="0.7.124" />
+        <PackageReference Include="TaskScheduler" Version="2.10.1" />
+        <PackageReference Include="Interop.UIAutomationClient.Signed" Version="10.19041.0" />
+        <PackageReference Include="Vanara.PInvoke.Kernel32" Version="3.4.16" />
+        <PackageReference Include="Vanara.PInvoke.User32" Version="3.4.15" />
+        <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+        <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
+        <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.2" />
 ```
 
 Pictures of an info popup:

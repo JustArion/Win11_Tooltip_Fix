@@ -1,7 +1,22 @@
 src/.idea/*
 src/bin/*
 src/obj/*
+src/.vs/*
+src/packages/*
 src/Test/*
+src/Output/*
+
 src/Publish/*
-src/PopupHost_ClickThroughPatch.csproj.user
-src/PopupHost_ClickThroughPatch.sln.DotSettings.user
+.vs/*
+
+# Personal Files
+*.suo
+*.user
+
+# The following is specific to the Start_Tooltip_Fix project
+src/Start_Tooltip_Fix/bin/*
+src/Start_Tooltip_Fix/obj/*
+
+# The following is specific to the Service project
+src/Tooltip_Fix/bin/*
+src/Tooltip_Fix/obj/*
