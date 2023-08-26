@@ -5,6 +5,8 @@
 Given you've installed the `Prerequisites`
 To `Install` or `Uninstall` simply run `Start_Tooltip_Fix.exe` from the extracted .zip from the releases section.
 
+The program can be installed as admin to affect programs that run as admin too but is `not required`
+
 ### Requirements (To Build from Source)
 * [.NET 7.0.X SDK - x86](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 * Optional* [Git](https://git-scm.com/downloads)
