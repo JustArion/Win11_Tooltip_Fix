@@ -4,6 +4,7 @@ using Contracts;
 using Vanara.PInvoke;
 
 [RequireAdmin(RequireAdminType.Admin)]
+[Obsolete("This installer type only works with the ASP version of Tooltip_Fix")]
 public class WinApi_FixInstaller : IFixInstaller
 {
     public void InstallService(FixConfigureOptions options)

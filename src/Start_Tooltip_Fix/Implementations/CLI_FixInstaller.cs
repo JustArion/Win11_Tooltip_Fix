@@ -5,6 +5,7 @@ using CliWrap;
 using Contracts;
 
 [RequireAdmin(RequireAdminType.Admin)]
+[Obsolete("This installer type only works with the ASP version of Tooltip_Fix")]
 public class CLI_FixInstaller : IFixInstaller
 {
     

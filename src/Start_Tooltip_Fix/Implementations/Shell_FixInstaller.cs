@@ -3,6 +3,7 @@
 using Contracts;
 
 [RequireAdmin(RequireAdminType.External)]
+[Obsolete("This installer type only works with the ASP version of Tooltip_Fix")]
 public class Shell_FixInstaller : IFixInstaller
 {
     public void InstallService(FixConfigureOptions options)

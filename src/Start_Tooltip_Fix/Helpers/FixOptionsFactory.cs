@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Security.Principal;
 using Contracts;
 
-public static class FixConfigureFactory
+public static class FixOptionsFactory
 {
     public const string SERVICE_NAME = "Tooltip Fix Service";
     private const string BINARY_NAME = "Tooltip_Fix.exe";

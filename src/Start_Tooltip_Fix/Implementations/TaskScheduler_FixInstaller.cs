@@ -10,58 +10,88 @@ public class TaskScheduler_FixInstaller : IFixInstaller
 {
     public void InstallService(FixConfigureOptions options)
     {
-        using var task = TaskService.Instance.GetTask(options.Name);
-        if (task != null)
+        try
         {
-            EditService(task, options);
-            return;
+            using var task = TaskService.Instance.GetTask(options.Name);
+            if (task != null)
+            {
+                EditService(task, options);
+                return;
+            }
+
+            using var taskDefinition = TaskService.Instance.NewTask();
+            taskDefinition.Actions.Add(new ExecAction(options.ProgramPath));
+            taskDefinition.Principal.RunLevel = options.RunAsAdmin ? TaskRunLevel.Highest : TaskRunLevel.LUA;
+            var userId = WindowsIdentity.GetCurrent().Name;
+            taskDefinition.Triggers.Add(new LogonTrigger
+            {
+                UserId = options.RunAsAdmin ? null : userId,
+                Delay = TimeSpan.FromMinutes(1)
+            });
+
+            TaskService.Instance.RootFolder.RegisterTaskDefinition(options.Name, taskDefinition);
+
+            var ourTask = TaskService.Instance.GetTask(options.Name);
+
+            if (ourTask == null)
+                Errors.Panic(new Exception("Failed to create task."));
+
+            Debug.Assert(ourTask != null, nameof(ourTask) + " != null");
+            ourTask.Enabled = true;
+            ourTask.RegisterChanges();
+
+            if (ourTask.State != TaskState.Running)
+                ourTask.Run();
         }
-        
-        using var taskDefinition = TaskService.Instance.NewTask();
-        taskDefinition.Actions.Add(new ExecAction(options.ProgramPath));
-        taskDefinition.Principal.RunLevel = options.RunAsAdmin ? TaskRunLevel.Highest : TaskRunLevel.LUA;
-        var userId = WindowsIdentity.GetCurrent().Name;
-        taskDefinition.Triggers.Add(new LogonTrigger
+        catch (Exception e)
         {
-            UserId = options.RunAsAdmin ? null : userId,
-            Delay = TimeSpan.FromMinutes(1)
-        });
-        
-        TaskService.Instance.RootFolder.RegisterTaskDefinition(options.Name, taskDefinition);
-        
-        var ourTask = TaskService.Instance.GetTask(options.Name);
+            Errors.Panic(e);
+        }
 
-        if (ourTask == null)
-            Errors.Panic(new Exception("Failed to create task."));
-
-        Debug.Assert(ourTask != null, nameof(ourTask) + " != null");
-        ourTask.Enabled = true;
-        ourTask.RegisterChanges();
     }
     
     
 
     private void EditService(Task task, FixConfigureOptions options)
     {
-        task.Enabled = true;
-        task.Definition.Settings.Enabled = true;
+        if (task.State == TaskState.Running)
+            task.Stop();
+        task.Enabled = true;        
+        var definition = task.Definition;
+        definition.Settings.Enabled = true;
         
-        task.Definition.Principal.RunLevel = options.RunAsAdmin ? TaskRunLevel.Highest : TaskRunLevel.LUA;
+        definition.Principal.RunLevel = options.RunAsAdmin ? TaskRunLevel.Highest : TaskRunLevel.LUA;
+        
+        var userId = WindowsIdentity.GetCurrent().Name;
+
+        if (definition.Triggers.FirstOrDefault(x => x.TriggerType == TaskTriggerType.Logon) is not LogonTrigger logonTrigger)
+            definition.Triggers.Add(new LogonTrigger
+            {
+                UserId = options.RunAsAdmin ? null : userId,
+                Delay = TimeSpan.FromMinutes(1)
+            });
+        else
+        {
+                logonTrigger.UserId = options.RunAsAdmin ? null : userId;
+                logonTrigger.Delay = TimeSpan.FromMinutes(1);
+        }
+        
 
         DoTaskSchedulerEditPatch(task);
 
-        if (task.Definition.Actions.FirstOrDefault(x => x.ActionType == TaskActionType.Execute) is not ExecAction execAction)
+        if (definition.Actions.FirstOrDefault(x => x.ActionType == TaskActionType.Execute) is not ExecAction execAction)
         {
-            task.Definition.Actions.Add(new ExecAction(options.ProgramPath));
+            definition.Actions.Add(new ExecAction(options.ProgramPath));
             task.RegisterChanges();
             return;
         }
 
-        if (execAction.Path == options.ProgramPath) 
-            return;
-        
         execAction.Path = options.ProgramPath;
+        
         task.RegisterChanges();
+
+        if (task.State != TaskState.Running)
+            task.Run();
     }
 
     private void DoTaskSchedulerEditPatch(Task task)
@@ -72,19 +102,27 @@ public class TaskScheduler_FixInstaller : IFixInstaller
 
     public void UninstallService(FixConfigureOptions options)
     {
-        using var task = TaskService.Instance.GetTask(options.Name);
+        try
+        {
+            using var task = TaskService.Instance.GetTask(options.Name);
 
-        if (task == null)
-            return;
-        
-        var isSynced = IsExecutionLevelSynced(options, task);
-        var isAdmin = options.RunAsAdmin;
+            if (task == null)
+                return;
 
-        if (!isSynced && !isAdmin)
-            ElevateRequest(Hotpath.Uninstall);
-        
-        // We should now be able to delete this task, seeing as we are either admin or the task is not admin.
-        TaskService.Instance.RootFolder.DeleteTask(options.Name);
+            var isSynced = IsExecutionLevelSynced(options, task);
+            var isAdmin = options.RunAsAdmin;
+
+            if (!isSynced && !isAdmin)
+                ElevateRequest(Hotpath.Uninstall);
+
+            // We should now be able to delete this task, seeing as we are either admin or the task is not admin.
+            TaskService.Instance.RootFolder.DeleteTask(options.Name);
+        }
+        catch (Exception e)
+        {
+            Errors.Panic(e);
+        }
+
     }
 
     public bool IsInstalled(FixConfigureOptions options)
@@ -95,6 +133,9 @@ public class TaskScheduler_FixInstaller : IFixInstaller
             return false; // Out of Sync - NOT_INSTALLED
 
         if (!IsExecutionLevelSynced(options, task)) 
+            return false; // Out of Sync - NOT_INSTALLED
+
+        if (task.State != TaskState.Running)
             return false; // Out of Sync - NOT_INSTALLED
         
         // [true] INSTALLED || [false] Out of Sync - NOT_INSTALLED

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net7.0-windows</TargetFramework>
@@ -13,7 +13,7 @@
         <Product>Tooltip Fix Service</Product>
         <AssemblyVersion>2.0</AssemblyVersion>
         <FileVersion>2.0</FileVersion>
-        <ServerGarbageCollection>true</ServerGarbageCollection>
+        <OutputType>WinExe</OutputType>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -31,14 +31,20 @@
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.1" />
         <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
         <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
+        <PackageReference Include="Serilog.Sinks.Console.LogThemes" Version="0.3.0" />
         <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.2" />
         <PackageReference Include="Vanara.PInvoke.Kernel32" Version="3.4.16" />
         <PackageReference Include="Vanara.PInvoke.User32" Version="3.4.15" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="appsettings.json">
+      <None Remove="appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="appsettings.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+      </EmbeddedResource>
     </ItemGroup>
 </Project>
