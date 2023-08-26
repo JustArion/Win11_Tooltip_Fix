@@ -11,8 +11,8 @@
         <UseWindowsForms>true</UseWindowsForms>
         <Company>JustArion</Company>
         <Product>Tooltip Fix Service</Product>
-        <AssemblyVersion>2.0</AssemblyVersion>
-        <FileVersion>2.0</FileVersion>
+        <AssemblyVersion>1.5</AssemblyVersion>
+        <FileVersion>1.5</FileVersion>
         <OutputType>WinExe</OutputType>
     </PropertyGroup>
 
