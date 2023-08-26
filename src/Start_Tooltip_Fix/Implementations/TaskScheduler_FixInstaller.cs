@@ -114,7 +114,9 @@ public class TaskScheduler_FixInstaller : IFixInstaller
 
             if (!isSynced && !isAdmin)
                 ElevateRequest(Hotpath.Uninstall);
-
+            
+            task.Stop();
+            
             // We should now be able to delete this task, seeing as we are either admin or the task is not admin.
             TaskService.Instance.RootFolder.DeleteTask(options.Name);
         }
