@@ -1,6 +1,5 @@
 ### Prerequisites
 * [.NET 7.0.X Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) (Select the ".NET Desktop Runtime 7.0" for `x86`)
-* [.NET 7.0.X ASP Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) (Select the ".NET ASP.NET Core Runtime 7.0" for `x86`)
 
 ### Installing
 Given you've installed the `Prerequisites`
@@ -25,14 +24,13 @@ The following packages are used in this project:
 </p>
 
 ```xml
+        <PackageReference Include="TaskScheduler" Version="2.10.1" />
         <PackageReference Include="Interop.UIAutomationClient.Signed" Version="10.19041.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+        <PackageReference Include="Vanara.PInvoke.Kernel32" Version="3.4.16" />
+        <PackageReference Include="Vanara.PInvoke.User32" Version="3.4.15" />
         <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
         <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
         <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.2" />
-        <PackageReference Include="Vanara.PInvoke.Kernel32" Version="3.4.15" />
-        <PackageReference Include="Vanara.PInvoke.User32" Version="3.4.15" />
-        <PackageReference Include="CliWrap" Version="3.6.4" />
 ```
 
 Pictures of an info popup:

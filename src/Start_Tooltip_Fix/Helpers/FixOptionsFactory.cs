@@ -6,7 +6,7 @@ using Contracts;
 
 public static class FixOptionsFactory
 {
-    public const string SERVICE_NAME = "Tooltip Fix Service";
+    private const string SERVICE_NAME = "Tooltip Fix";
     private const string BINARY_NAME = "Tooltip_Fix.exe";
     private const string FILE_DESCRIPTION = "Tooltip_Fix";
     public static FixConfigureOptions Create()
