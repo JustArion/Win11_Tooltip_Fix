@@ -8,11 +8,12 @@ public static class FixOptionsFactory
 {
     private const string SERVICE_NAME = "Tooltip Fix";
     private const string BINARY_NAME = "Tooltip_Fix.exe";
+    private const string FILE_DESCRIPTION = "Tooltip_Fix";
     public static FixConfigureOptions Create()
     {
         var serviceDirectoryPath = new DirectoryInfo(AppContext.BaseDirectory).EnumerateDirectories().FirstOrDefault(d => d.Name == "Service");
         
-        if (serviceDirectoryPath?.GetFiles().FirstOrDefault(x => x.Name == BINARY_NAME) == null)
+        if (serviceDirectoryPath?.GetFiles().FirstOrDefault(x => GetFileDescription(x) == FILE_DESCRIPTION) is null)
         {
             MessageBox.Show($"Service Folder or 'Service/{BINARY_NAME}' was not found. Make sure to extract all files from the .zip and try again", SERVICE_NAME, MessageBoxButtons.OK, MessageBoxIcon.Error);
             Environment.Exit(1);
@@ -26,4 +27,6 @@ public static class FixOptionsFactory
             RunAsAdmin = isAdmin
         };
     }
+
+    private static string? GetFileDescription(FileSystemInfo f) => FileVersionInfo.GetVersionInfo(f.FullName).FileDescription;
 }
