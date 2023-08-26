@@ -14,6 +14,7 @@ internal static class Program
     [STAThread]
     internal static void Main()
     {
+        FreeConsole();
         var isWin11 = Environment.OSVersion.Version is { Major: >= 10, Minor: >= 0, Build: >= 22000 };
         if (!isWin11)
         {
@@ -75,10 +76,10 @@ internal static class Program
             .WriteTo.Seq("http://localhost:9999")
             .CreateLogger();
 
-        var attached = AttachConsole(ATTACH_PARENT_PROCESS);
         
         AppDomain.CurrentDomain.UnhandledException += (_, eo) => Log.Error(eo.ExceptionObject as Exception, "Unhandled Exception");
         
+        var attached = AttachConsole(ATTACH_PARENT_PROCESS);
         if (!attached)
         {
             // On Some PCs a shadow console is created. We need to free it.
