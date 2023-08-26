@@ -2,6 +2,7 @@ using Start_Tooltip_Fix;
 using Start_Tooltip_Fix.Contracts;
 using Start_Tooltip_Fix.Implementations;
 
+Interop.FreeConsole(); // Sometimes a ghost-console appears. This is a workaround.
 var fixInfo = FixOptionsFactory.Create();
 IFixInstaller installer = new TaskScheduler_FixInstaller();
 var launchArgs = new LaunchArgs(args);

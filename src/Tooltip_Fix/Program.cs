@@ -7,8 +7,6 @@ using System.Text.Json;
 using Serilog;
 using Dawn.Apps.Tooltip_Fix.Serilog.CustomEnrichers;
 using Interop.UIAutomationClient;
-using Microsoft.Extensions.Configuration;
-using Serilog.Settings.Configuration;
 using MessageBox = System.Windows.Forms.MessageBox;
 
 internal static class Program
@@ -55,23 +53,25 @@ internal static class Program
     {
         ExtractAppSettingsIfNecessary();
         
-        var loggingConfig = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", false, true)
-            .Build();
+        // var loggingConfig = new ConfigurationBuilder()
+        //     .SetBasePath(AppContext.BaseDirectory)
+        //     .AddJsonFile("appsettings.json", false, true)
+        //     .Build();
 
         /* Prevention of the following exception under Single-File Publish:
          * System.InvalidOperationException: No Serilog:Using configuration section is defined and no Serilog assemblies were found.
             This is most likely because the application is published as single-file.
          */
-        var options = new ConfigurationReaderOptions(
-            typeof(ConsoleLoggerConfigurationExtensions).Assembly, 
-            typeof(Serilog.Enrichers.ProcessNameEnricher).Assembly, 
-            typeof(Serilog.AspNetCore.RequestLoggingOptions).Assembly);
+        // var options = new ConfigurationReaderOptions(
+        //     typeof(ConsoleLoggerConfigurationExtensions).Assembly, 
+        //     typeof(Serilog.Enrichers.ProcessNameEnricher).Assembly, 
+        //     typeof(Serilog.AspNetCore.RequestLoggingOptions).Assembly);
 
         Log.Logger = new LoggerConfiguration()
             .Enrich.WithClassName()
-            .ReadFrom.Configuration(loggingConfig, options)
+            .WriteTo.Console(outputTemplate: "{Level:u1} {Timestamp:yyyy-MM-dd HH:mm:ss.ffffff} [{Source}] {Message:lj}{NewLine}{Exception}")
+            .Enrich.WithProcessName()
+            .Enrich.FromLogContext()
             .WriteTo.Seq("http://localhost:9999")
             .CreateLogger();
 

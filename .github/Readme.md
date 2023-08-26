@@ -28,7 +28,7 @@ The following packages are used in this project:
         <PackageReference Include="Interop.UIAutomationClient.Signed" Version="10.19041.0" />
         <PackageReference Include="Vanara.PInvoke.Kernel32" Version="3.4.16" />
         <PackageReference Include="Vanara.PInvoke.User32" Version="3.4.15" />
-        <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
         <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
         <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.2" />
 ```
