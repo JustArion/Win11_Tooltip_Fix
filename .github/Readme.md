@@ -13,7 +13,7 @@ To `Install` or `Uninstall` simply run `Start_Tooltip_Fix.exe` from the extracte
 `Make sure the proper .NET 7.0.X SDK is installed.`
 ```ps1
 git clone https://github.com/JustArion/Win11_Tooltip_Fix
-cd .\Win11_Tooltip_Fix\Extra\
+cd .\Win11_Tooltip_Fix\
 Set-ExecutionPolicy Bypass -Scope Process
 ./Build.ps1
 ```

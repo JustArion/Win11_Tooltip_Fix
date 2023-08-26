@@ -23,13 +23,9 @@ jobs:
       with:
         dotnet-version: 7.0.X
     
-    - name: Dependencies Setup
-      shell: pwsh
-      run: .\Extra\Restore.ps1
-
     - name: Build
       shell: pwsh
-      run: .\Extra\Build.ps1
+      run: .\Build.ps1
 
     - name: Archive the Build
       run: 7z a -tzip Release.zip ./src/Output/*
@@ -40,7 +36,7 @@ jobs:
       with:
         tag_name: ${{ github.event.inputs.release_tag }}
         release_name: Release ${{ github.event.inputs.release_tag }}
-        draft: false
+        draft: true
         prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
