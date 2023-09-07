@@ -32,10 +32,4 @@
         <PackageReference Include="Vanara.PInvoke.Kernel32" Version="3.4.16" />
         <PackageReference Include="Vanara.PInvoke.User32" Version="3.4.15" />
     </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Include="appsettings.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </EmbeddedResource>
-    </ItemGroup>
 </Project>

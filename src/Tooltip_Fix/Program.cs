@@ -1,12 +1,11 @@
 using System.ComponentModel;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.Json;
 using Serilog;
 using Dawn.Apps.Tooltip_Fix.Serilog.CustomEnrichers;
 using Interop.UIAutomationClient;
+using Serilog.Events;
 using MessageBox = System.Windows.Forms.MessageBox;
 
 internal static class Program
@@ -52,24 +51,13 @@ internal static class Program
 
     private static void InitializeConsole()
     {
-        ExtractAppSettingsIfNecessary();
-        
-        // var loggingConfig = new ConfigurationBuilder()
-        //     .SetBasePath(AppContext.BaseDirectory)
-        //     .AddJsonFile("appsettings.json", false, true)
-        //     .Build();
-
-        /* Prevention of the following exception under Single-File Publish:
-         * System.InvalidOperationException: No Serilog:Using configuration section is defined and no Serilog assemblies were found.
-            This is most likely because the application is published as single-file.
-         */
-        // var options = new ConfigurationReaderOptions(
-        //     typeof(ConsoleLoggerConfigurationExtensions).Assembly, 
-        //     typeof(Serilog.Enrichers.ProcessNameEnricher).Assembly, 
-        //     typeof(Serilog.AspNetCore.RequestLoggingOptions).Assembly);
-
         Log.Logger = new LoggerConfiguration()
             .Enrich.WithClassName()
+            #if DEBUG
+            .MinimumLevel.Is(LogEventLevel.Verbose)
+            #else
+            .MinimumLevel.Is(LogEventLevel.Information)
+            #endif
             .WriteTo.Console(outputTemplate: "{Level:u1} {Timestamp:yyyy-MM-dd HH:mm:ss.ffffff} [{Source}] {Message:lj}{NewLine}{Exception}")
             .Enrich.WithProcessName()
             .Enrich.FromLogContext()
@@ -90,34 +78,8 @@ internal static class Program
         Log.Information("Tooltip Fix Initialized");
     }
 
-    private static void ExtractAppSettingsIfNecessary()
-    {
-        var appSettingsPath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
-        if (File.Exists(appSettingsPath) && JsonSerializer.Deserialize<object>(File.ReadAllText(appSettingsPath)) is not null)
-            return;
-        
-        // Extract is from embedded resources
-        
-        var assembly = Assembly.GetExecutingAssembly();
-        
-        var resourceNames = assembly.GetManifestResourceNames();
-        
-        var resourcePath = resourceNames.FirstOrDefault(x => x.EndsWith("appsettings.json"));
-        
-        if (resourcePath is null)
-            throw new InvalidOperationException("appsettings.json was not found in the embedded resources");
-        
-        using var stream = assembly.GetManifestResourceStream(resourcePath);
-        
-        if (stream is null)
-            throw new InvalidOperationException("appsettings.json was not found in the embedded resources");
-        
-        using var reader = new StreamReader(stream);
-        
-        File.WriteAllText(appSettingsPath, reader.ReadToEnd());
-    }
 
-#if DEBUG
+    #if DEBUG
     private const int _DebugProcessID = 0;
     #endif
     private static HWINEVENTHOOK _hHook;
@@ -208,7 +170,7 @@ internal static class Program
                 return false;
 
             //                                Xaml_WindowedPopupClass         PopupHost                   Popup                       Popup
-            Log.Logger.Debug("'{CurrentElementClassName}' - '{CurrentElementName}' - '{CurrentPopupClassName}' - '{CurrentPopupName}'", 
+            Log.Debug("'{CurrentElementClassName}' - '{CurrentElementName}' - '{CurrentPopupClassName}' - '{CurrentPopupName}'", 
                 element.CurrentClassName, element.CurrentName, popup.CurrentClassName, popup.CurrentName);
             
             var child = popup.FindFirst(TreeScope.TreeScope_Children, _Automation.ControlViewCondition);
@@ -216,7 +178,7 @@ internal static class Program
                 return false;
 
             //                                  ToolTip            {ToolTipName}
-            Log.Logger.Debug("Type: '{CurrentClassName}' - '{CurrentName}'", 
+            Log.Information("Type: '{CurrentClassName}' - '{CurrentName}'", 
                 child.CurrentClassName, child.CurrentName);
 
             return child.CurrentClassName == "ToolTip";
@@ -250,11 +212,12 @@ internal static class Program
         style |= WindowStylesEx.WS_EX_TRANSPARENT | WindowStylesEx.WS_EX_LAYERED;
         
         var retVal = SetWindowLong(hwnd, WindowLongFlags.GWL_EXSTYLE, (int)style);
+        var lastError = GetLastError();
         
-        if (retVal != 0) 
+        if (retVal != 0 && lastError.Succeeded) 
             return;
 
-        Log.Logger.Error(new Win32Exception(Marshal.GetLastWin32Error()), "Error setting window style");
+        Log.Logger.Error(lastError.GetException(), "Error setting window style");
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
