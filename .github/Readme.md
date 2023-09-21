@@ -36,6 +36,8 @@ The following packages are used in this project:
         <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.2" />
 ```
 
+Addresses: 
+https://linustechtips.com/topic/1466612-windows-11-annoyance-tooltips-blocking-every-other-action/
 Pictures of an info popup:
 
 <img src="https://cdn.discordapp.com/attachments/883435300880261120/1036287020038901920/5096f326-4e01-47b6-bdac-039aec7da779_30-10-2022.png"/>
