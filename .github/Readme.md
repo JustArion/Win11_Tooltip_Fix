@@ -1,3 +1,6 @@
+# Note
+Windows 11 has begun rolling out updates to their programs that fixes this problem. It's currently fixed in the latest version of explorer in an explorer window, but not the taskbar. Task Manager hasn't been updated yet and as such still experiences this bug.
+
 ### Prerequisites
 * [.NET 7.0.X Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) (Select the ".NET Desktop Runtime 7.0" for `x86`)
 
