@@ -107,7 +107,7 @@ internal static class Program
     private static HWINEVENTHOOK InitializeOnPID(uint pid) =>
         SetWinEventHook(EventConstants.EVENT_OBJECT_SHOW,
             EventConstants.EVENT_OBJECT_SHOW, 
-            IntPtr.Zero, 
+            nint.Zero, 
             Callback, pid, 0,
             WINEVENT.WINEVENT_OUTOFCONTEXT);
 
@@ -147,7 +147,7 @@ internal static class Program
         catch (Exception e) { Log.Logger.Error(e, "Unknown Error"); }
     }
     
-        private static readonly CUIAutomationClass _Automation = new();
+    private static readonly CUIAutomationClass _Automation = new();
     
     /// <code>
     /// This is the general structure we look for.
@@ -163,7 +163,8 @@ internal static class Program
             if (hwnd.IsNull) return false;
             var element = _Automation.ElementFromHandle(hwnd.DangerousGetHandle());
             
-            if (element is not { CurrentFrameworkId: "XAML" }) return false;
+            if (element is not { CurrentFrameworkId: "XAML" }) 
+                return false;
 
             var popup = element.FindFirst(TreeScope.TreeScope_Children, _Automation.ControlViewCondition);
             if (popup is null)
@@ -177,9 +178,14 @@ internal static class Program
             if (child is null)
                 return false;
 
-            //                                  ToolTip            {ToolTipName}
-            Log.Information("Type: '{CurrentClassName}' - '{CurrentName}'", 
-                child.CurrentClassName, child.CurrentName);
+            var childName = child.CurrentName;
+            if (!string.IsNullOrWhiteSpace(childName))
+            {
+                //                                  ToolTip            {ToolTipName}
+                Log.Information("Type: '{CurrentClassName}' - '{CurrentName}'", 
+                    child.CurrentClassName, child.CurrentName);
+            }
+
 
             return child.CurrentClassName == "ToolTip";
         }
