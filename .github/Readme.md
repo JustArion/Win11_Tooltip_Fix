@@ -42,10 +42,10 @@ The following packages are used in this project:
 Addresses: 
 https://linustechtips.com/topic/1466612-windows-11-annoyance-tooltips-blocking-every-other-action/
 
-Pictures of an info popup:
+Images of a tooltip:
 
-<img src="https://cdn.discordapp.com/attachments/883435300880261120/1036287020038901920/5096f326-4e01-47b6-bdac-039aec7da779_30-10-2022.png"/>
+![Task Manager Tooltip](./images/5096f326-4e01-47b6-bdac-039aec7da779_30-10-2022.png)
 
-<img src="https://cdn.discordapp.com/attachments/883435300880261120/1036287334846578770/d62c5052-a6c1-461b-bff9-33418f2d2d20_30-10-2022.png"/>
+![Taskbar Tooltip](./images/d62c5052-a6c1-461b-bff9-33418f2d2d20_30-10-2022.png)
 
-<img src="https://cdn.discordapp.com/attachments/883435300880261120/1036287528354988163/ca74a981-2d73-49da-852d-d42f831d588c_30-10-2022.png"/>
+![Explorer Tooltip](./images/ca74a981-2d73-49da-852d-d42f831d588c_30-10-2022.png)
