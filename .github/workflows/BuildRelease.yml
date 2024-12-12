@@ -18,6 +18,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        persist-credentials: false
     - name: .NET Core SDK Setup
       uses: actions/setup-dotnet@v3
       with:
