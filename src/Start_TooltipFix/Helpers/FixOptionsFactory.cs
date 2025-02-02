@@ -1,4 +1,4 @@
-﻿namespace Start_Tooltip_Fix;
+﻿namespace Start_TooltipFix;
 
 using System.Diagnostics;
 using System.Security.Principal;
@@ -7,8 +7,8 @@ using Contracts;
 public static class FixOptionsFactory
 {
     private const string SERVICE_NAME = "Tooltip Fix";
-    private const string BINARY_NAME = "Tooltip_Fix.exe";
-    private const string FILE_DESCRIPTION = "Tooltip_Fix";
+    private const string BINARY_NAME = "TooltipFix.exe";
+    private const string FILE_DESCRIPTION = "TooltipFix";
     public static FixConfigureOptions Create()
     {
         var serviceDirectoryPath = new DirectoryInfo(AppContext.BaseDirectory).EnumerateDirectories().FirstOrDefault(d => d.Name == "Service");

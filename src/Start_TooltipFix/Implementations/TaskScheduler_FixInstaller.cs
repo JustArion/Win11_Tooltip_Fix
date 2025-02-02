@@ -1,4 +1,4 @@
-﻿namespace Start_Tooltip_Fix.Implementations;
+﻿namespace Start_TooltipFix.Implementations;
 
 using System.Diagnostics;
 using System.Security.Principal;

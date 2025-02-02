@@ -1,4 +1,4 @@
-﻿namespace Dawn.Apps.Tooltip_Fix.Serilog.CustomEnrichers;
+﻿namespace Dawn.Apps.TooltipFix.Serilog.CustomEnrichers;
 
 using global::Serilog;
 using global::Serilog.Configuration;

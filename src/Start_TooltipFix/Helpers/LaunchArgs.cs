@@ -1,4 +1,4 @@
-﻿namespace Start_Tooltip_Fix;
+﻿namespace Start_TooltipFix;
 
 public sealed class LaunchArgs
 {
@@ -8,7 +8,7 @@ public sealed class LaunchArgs
 
         SkipPrompts = RawArgs.Contains(SKIP_PROMPTS_ARG);
         
-        Hotpath = RawArgs.Contains(INSTALL_ARG) ? Start_Tooltip_Fix.Hotpath.Install : RawArgs.Contains(UNINSTALL_ARG) ? Start_Tooltip_Fix.Hotpath.Uninstall : null;
+        Hotpath = RawArgs.Contains(INSTALL_ARG) ? Start_TooltipFix.Hotpath.Install : RawArgs.Contains(UNINSTALL_ARG) ? Start_TooltipFix.Hotpath.Uninstall : null;
     }
 
     public LaunchArgs()

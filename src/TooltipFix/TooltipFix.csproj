@@ -7,7 +7,7 @@
         <LangVersion>latest</LangVersion>
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
         <RuntimeIdentifier>win-x86</RuntimeIdentifier>
-        <RootNamespace>Dawn.Apps.Tooltip_Fix</RootNamespace>
+        <RootNamespace>Dawn.Apps.TooltipFix</RootNamespace>
         <UseWindowsForms>true</UseWindowsForms>
         <Company>JustArion</Company>
         <Product>Tooltip Fix Service</Product>

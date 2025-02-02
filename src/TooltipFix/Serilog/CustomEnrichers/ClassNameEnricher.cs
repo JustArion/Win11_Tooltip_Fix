@@ -1,5 +1,5 @@
 ﻿#nullable enable
-namespace Dawn.Apps.Tooltip_Fix.Serilog.CustomEnrichers;
+namespace Dawn.Apps.TooltipFix.Serilog.CustomEnrichers;
 
 using System.Diagnostics;
 using global::Serilog.Core;

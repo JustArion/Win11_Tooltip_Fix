@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Serilog;
-using Dawn.Apps.Tooltip_Fix.Serilog.CustomEnrichers;
+using Dawn.Apps.TooltipFix.Serilog.CustomEnrichers;
 using Interop.UIAutomationClient;
 using Serilog.Events;
 using MessageBox = System.Windows.Forms.MessageBox;

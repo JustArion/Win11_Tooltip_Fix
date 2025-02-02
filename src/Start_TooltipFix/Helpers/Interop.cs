@@ -1,4 +1,4 @@
-﻿namespace Start_Tooltip_Fix;
+﻿namespace Start_TooltipFix;
 
 using System.Runtime.InteropServices;
 

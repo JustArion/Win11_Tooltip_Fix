@@ -1,6 +1,6 @@
-using Start_Tooltip_Fix;
-using Start_Tooltip_Fix.Contracts;
-using Start_Tooltip_Fix.Implementations;
+using Start_TooltipFix;
+using Start_TooltipFix.Contracts;
+using Start_TooltipFix.Implementations;
 
 Interop.FreeConsole(); // Sometimes a ghost-console appears. This is a workaround.
 var fixInfo = FixOptionsFactory.Create();

@@ -1,4 +1,4 @@
-﻿namespace Start_Tooltip_Fix.Contracts;
+﻿namespace Start_TooltipFix.Contracts;
 
 public interface IFixInstaller
 {

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33403.182
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tooltip_Fix", "Tooltip_Fix\Tooltip_Fix.csproj", "{2E749F59-70CD-4D2B-8A31-19996B0582BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TooltipFix", "TooltipFix\TooltipFix.csproj", "{2E749F59-70CD-4D2B-8A31-19996B0582BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Start_Tooltip_Fix", "Start_Tooltip_Fix\Start_Tooltip_Fix.csproj", "{FA98F9A3-FDBC-4FF1-B342-C070F3D026A7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Start_TooltipFix", "Start_TooltipFix\Start_TooltipFix.csproj", "{FA98F9A3-FDBC-4FF1-B342-C070F3D026A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
